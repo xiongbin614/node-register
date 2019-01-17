@@ -1,24 +1,18 @@
 // 创建服务器
 var http=require("http");
 var fs=require("fs");
+var url=require("url");
+var router = require("./modules/router.js");
 var sever= http.createServer(function(req,res){
     if (req.url ==='/favicon.ico'){
         res.end();
         return;
-    }else if(req.url==='/'){
-        fs.readFile('./index.html',function(err,data){
-            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-            res.write(data);
-            res.end();
-            return;
-        })
-    } else if (req.url === '/goods') {
-        fs.readFile('./goods.html', function (err, data) {
-            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-            res.write(data);
-            res.end();
-            return;
-        })
+    }
+    var pathName = url.parse(req.url).pathname.substr(1);
+    try {
+        router[pathName](req, res);   
+    } catch (error) {
+        router['home'](req, res);   
     }
 });
-sever.listen(3001);
+sever.listen(3001); 
